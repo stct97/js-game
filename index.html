@@ -46,9 +46,12 @@
         var brickPadding = 10;
         var brickOffsetTop = 30;
         var brickOffsetLeft = 30;
+        var score = 0;
+        var lives = 3;
 
         document.addEventListener("keydown", keyDownHandler, false);
         document.addEventListener("keyup", keyUpHandler, false);
+        document.addEventListener("mousemove", mouseMoveHandler, false);
 
         var bricks = [];
         for (c = 0; c < brickColumnCount; c++) {
@@ -83,6 +86,17 @@
             }
             colors.push(color)
             return colors[index];
+        }
+
+        function drawScore() {
+            ctx.font = "16px Arial";
+            ctx.fillStyle = "#0095DD";
+            ctx.fillText("Score: " + score, 8, 20);
+        }
+        function drawLives() {
+            ctx.font = "16px Arial";
+            ctx.fillStyle = "#0095DD";
+            ctx.fillText("Lives: " + lives, canvas.width - 65, 20);
         }
 
         function drawBall() {
@@ -121,6 +135,13 @@
             }
         }
 
+        function mouseMoveHandler(e) {
+            var relativeX = e.clientX - canvas.offsetLeft;
+            if (relativeX > 0 && relativeX < canvas.width) {
+                paddleX = relativeX - paddleWidth / 2;
+            }
+        }
+
         function collisionDetection() {
             for (c = 0; c < brickColumnCount; c++) {
                 for (r = 0; r < brickRowCount; r++) {
@@ -130,6 +151,8 @@
                             dy = -dy;
                             b.status = 0;
                             index++;
+                            score++;
+
                         }
                     }
                 }
@@ -141,6 +164,8 @@
             drawBricks();
             drawBall();
             drawPaddle();
+            drawScore();
+            drawLives()
             collisionDetection();
             if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
                 dx = -dx;
@@ -158,7 +183,18 @@
                     setInterval(draw, vel);
                 }
                 else {
-                    document.location.reload();
+                    lives--;
+                    if (!lives) {
+                        alert("PERDISTE");
+                        document.location.reload();
+                    }
+                    else {
+                        x = canvas.width / 2;
+                        y = canvas.height - 30;
+                        dx = 3;
+                        dy = -3;
+                        paddleX = (canvas.width - paddleWidth) / 2;
+                    }
 
                 }
             }
@@ -170,6 +206,7 @@
             }
             x += dx;
             y += dy;
+
         }
         setInterval(draw, vel);
     </script>
